@@ -1,0 +1,25 @@
+{
+  "name": "ecommerce-model-be",
+  "version": "1.0.0",
+  "main": "server.js",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.2",
+    "express": "^4.21.2",
+    "ioredis": "^5.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.10.0",
+    "typescript": "^5"
+  },
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "nodemon": "^3.1.9"
+  }
+}
