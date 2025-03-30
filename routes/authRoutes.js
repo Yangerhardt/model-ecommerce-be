@@ -47,15 +47,18 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await redis.get(`user:${email}`);
-  if (!user) return res.status(400).json({ error: 'Usuário não encontrado' });
+  const userData = await redis.get(`user:${email}`);
+  if (!userData)
+    return res.status(400).json({ error: 'Usuário não encontrado' });
 
-  const { password: hashedPassword } = JSON.parse(user);
+  const { id, password: hashedPassword } = JSON.parse(userData);
+
   const isMatch = await bcrypt.compare(password, hashedPassword);
   if (!isMatch) return res.status(400).json({ error: 'Credenciais inválidas' });
 
-  const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
-  res.json({ message: 'Login realizado com sucesso!', token });
+  const token = jwt.sign({ email, id }, JWT_SECRET, { expiresIn: '1h' });
+
+  res.json({ message: 'Login realizado com sucesso!', token, email, id });
 });
 
 router.post('/forgot-password', async (req, res) => {
