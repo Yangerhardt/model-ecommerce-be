@@ -3,11 +3,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const redis = require('../redis');
 const nodemailer = require('nodemailer');
+const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Função auxiliar para enviar email
 async function sendResetEmail(email, token) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -27,23 +27,23 @@ async function sendResetEmail(email, token) {
   await transporter.sendMail(mailOptions);
 }
 
-// 📌 Rota para cadastrar usuário
 router.post('/register', async (req, res) => {
   const { email, password } = req.body;
 
   const userExists = await redis.get(`user:${email}`);
   if (userExists) return res.status(400).json({ error: 'Usuário já existe' });
 
+  const userId = uuidv4();
   const hashedPassword = await bcrypt.hash(password, 10);
+
   await redis.set(
     `user:${email}`,
-    JSON.stringify({ email, password: hashedPassword }),
+    JSON.stringify({ id: userId, email, password: hashedPassword }),
   );
 
-  res.json({ message: 'Usuário cadastrado com sucesso!' });
+  res.json({ message: 'Usuário cadastrado com sucesso!', id: userId });
 });
 
-// 📌 Rota para login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -58,7 +58,6 @@ router.post('/login', async (req, res) => {
   res.json({ message: 'Login realizado com sucesso!', token });
 });
 
-// 📌 Rota para solicitar recuperação de senha
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
 
@@ -66,13 +65,12 @@ router.post('/forgot-password', async (req, res) => {
   if (!user) return res.status(400).json({ error: 'Usuário não encontrado' });
 
   const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '15m' });
-  await redis.set(`reset:${token}`, email, 'EX', 900); // Expira em 15 min
+  await redis.set(`reset:${token}`, email, 'EX', 900);
 
   await sendResetEmail(email, token);
   res.json({ message: 'Email de recuperação enviado!' });
 });
 
-// 📌 Rota para redefinir senha
 router.post('/reset-password/:token', async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
