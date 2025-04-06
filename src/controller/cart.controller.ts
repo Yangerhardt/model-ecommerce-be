@@ -1,14 +1,15 @@
-import { Request, Response } from 'express';
-import { CartItem } from '@ecommercebe/types/cart';
+import { Response } from 'express';
 import { createCart } from '../service/cart.service';
+import { AuthRequest } from '@ecommercebe/types/authRequest';
 
-export const handleCreateCart = async (req: Request, res: Response) => {
-  const { items } = req.body as { items: CartItem[] };
+export const handleCreateCart = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const { items } = req.body;
 
-  try {
-    const cart = await createCart (items);
-    return res.status(201).json({ message: 'Cart created with success', cart });
-  } catch (err: any) {
-    return res.status(400).json({ error: err.message });
+  if (!userId) {
+    return res.status(401).json({ error: 'Usuário não autenticado' });
   }
+
+  const cart = await createCart(userId, items);
+  res.status(201).json(cart);
 };

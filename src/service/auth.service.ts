@@ -34,7 +34,7 @@ export const loginUser = async (email: string, password: string) => {
     expiresIn: '1h',
   });
 
-  return { token, email, id: user.id };
+  return { token, id: user.id };
 };
 
 export const requestPasswordReset = async (email: string) => {
