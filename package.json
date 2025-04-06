@@ -17,10 +17,19 @@
     "uuid": "^11.1.0"
   },
   "scripts": {
-    "dev": "nodemon server.js"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "deploy": "npm install --production && npm run build && npm start"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/ioredis": "^4.28.10",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.14",
+    "@types/nodemailer": "^6.4.17",
+    "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.9"
   }
 }
