@@ -3,12 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const redis = require('./redis');
 const authRoutes = require('./routes/authRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 app.use('/auth', authRoutes);
+app.use('/cart', cartRoutes);
 
 app.get('/', async (req, res) => {
   await redis.set('test', 'API funcionando!');
