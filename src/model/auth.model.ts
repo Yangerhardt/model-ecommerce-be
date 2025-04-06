@@ -1,4 +1,4 @@
-import redis from '../redis';
+import redis from '../config/redis';
 
 export const getUserByEmail = async (email: string) => {
   const userData = await redis.get(`user:${email}`);

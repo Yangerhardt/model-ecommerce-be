@@ -1,4 +1,4 @@
-import redis from '../redis';
+import redis from '../config/redis';
 import { Cart } from '@ecommercebe/types/cart';
 
 export const saveCart = async (cart: Cart): Promise<void> => {

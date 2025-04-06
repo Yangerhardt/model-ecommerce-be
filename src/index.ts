@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import redis from './redis';
+import redis from './config/redis';
 import authRoutes from './routes/authRoutes';
 import cartRoutes from './routes/cartRoutes';
 

@@ -19,7 +19,7 @@
   "scripts": {
     "dev": "nodemon tsc dist/index.js",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "tsc && node dist/index.js",
     "deploy": "npm install --production && npm run build && npm start"
   },
   "devDependencies": {
