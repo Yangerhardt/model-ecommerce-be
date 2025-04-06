@@ -17,6 +17,7 @@
     "uuid": "^11.1.0"
   },
   "scripts": {
+    "dev": "nodemon tsc dist/index.js",
     "build": "tsc",
     "start": "node dist/index.js",
     "deploy": "npm install --production && npm run build && npm start"
