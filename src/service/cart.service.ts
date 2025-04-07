@@ -2,6 +2,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { saveCart } from '../model/cart.model';
 import { Cart, CartItem } from '@ecommercebe/types/cart';
 
+const now = new Date();
+const expiresAt = new Date(now.getTime() + 15 * 60 * 1000);
+
 export const createCart = async (
   userId: string,
   items: CartItem[] = [],
@@ -11,6 +14,8 @@ export const createCart = async (
     id: cartId,
     userId,
     items,
+    createdAt: now,
+    expiresAt,
   };
   await saveCart(cart);
   return cart;

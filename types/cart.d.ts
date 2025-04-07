@@ -11,5 +11,6 @@ export interface Cart {
   userId: string;
   totalQuantity?: number;
   totalPrice?: number;
-  createdAt?: string;
+  createdAt?: Date;
+  expiresAt?: Date;
 }
