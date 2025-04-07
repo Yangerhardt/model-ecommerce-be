@@ -14,25 +14,30 @@ const auth_service_1 = require("../service/auth.service");
 const handleRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     const result = yield (0, auth_service_1.registerUser)(email, password);
-    res.json({ message: 'Usuário cadastrado com sucesso!', id: result.id });
+    res.json({ message: 'User registered!', id: result.id });
 });
 exports.handleRegister = handleRegister;
-const handleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
-    const { token, id } = yield (0, auth_service_1.loginUser)(email, password);
-    res.json({ message: 'Sucesso', token, email, id });
+const handleLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, password } = req.body;
+        const result = yield (0, auth_service_1.loginUser)(email, password);
+        res.status(200).json(result);
+    }
+    catch (err) {
+        next(err);
+    }
 });
 exports.handleLogin = handleLogin;
 const handleForgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
     yield (0, auth_service_1.requestPasswordReset)(email);
-    res.json({ message: 'Email de recuperação enviado!' });
+    res.json({ message: 'Recovery email sent!' });
 });
 exports.handleForgotPassword = handleForgotPassword;
 const handleResetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = req.params;
     const { password } = req.body;
     yield (0, auth_service_1.resetPassword)(token, password);
-    res.json({ message: 'Senha redefinida com sucesso!' });
+    res.json({ message: 'Password reset!' });
 });
 exports.handleResetPassword = handleResetPassword;

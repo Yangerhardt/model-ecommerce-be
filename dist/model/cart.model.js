@@ -15,6 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.saveCart = void 0;
 const redis_1 = __importDefault(require("../config/redis"));
 const saveCart = (cart) => __awaiter(void 0, void 0, void 0, function* () {
-    yield redis_1.default.set(`cart:${cart.id}`, JSON.stringify(cart));
+    yield redis_1.default.set(`cart:${cart.id}`, JSON.stringify(cart), 'EX', 60 * 15);
 });
 exports.saveCart = saveCart;

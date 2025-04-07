@@ -12,12 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCart = void 0;
 const uuid_1 = require("uuid");
 const cart_model_1 = require("../model/cart.model");
+const now = new Date();
+const expiresAt = new Date(now.getTime() + 15 * 60 * 1000);
 const createCart = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, ...args_1], void 0, function* (userId, items = []) {
     const cartId = (0, uuid_1.v4)();
     const cart = {
         id: cartId,
         userId,
         items,
+        createdAt: now,
+        expiresAt,
     };
     yield (0, cart_model_1.saveCart)(cart);
     return cart;

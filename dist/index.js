@@ -18,6 +18,7 @@ const cors_1 = __importDefault(require("cors"));
 const redis_1 = __importDefault(require("./config/redis"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const cartRoutes_1 = __importDefault(require("./routes/cartRoutes"));
+const errorHandler_1 = require("./middleware/errorHandler");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
@@ -28,6 +29,7 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const value = yield redis_1.default.get('test');
     res.send({ message: value });
 }));
+app.use(errorHandler_1.errorHandler);
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
