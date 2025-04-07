@@ -18,7 +18,7 @@
     "zod": "^3.24.2"
   },
   "scripts": {
-    "dev": "nodemon tsc dist/index.js",
+    "dev": "tsc && nodemon dist/index.js",
     "build": "tsc",
     "start": "tsc && node dist/index.js",
     "deploy": "npm install --production && npm run build && npm start"

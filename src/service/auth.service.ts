@@ -8,12 +8,13 @@ import {
   getEmailByResetToken,
 } from '../model/auth.model';
 import { sendResetEmail } from '../utils/mailer';
+import { AppError } from '../error/appError';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export const registerUser = async (email: string, password: string) => {
   const existing = await getUserByEmail(email);
-  if (existing) throw new Error('Usuário já existe');
+  if (existing) throw new AppError('User already registered', 400);
 
   const userId = uuidv4();
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -25,10 +26,10 @@ export const registerUser = async (email: string, password: string) => {
 
 export const loginUser = async (email: string, password: string) => {
   const user = await getUserByEmail(email);
-  if (!user) throw new Error('Usuário não encontrado');
+  if (!user) throw new AppError('User not found', 404);
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error('Senha inválida');
+  if (!isMatch) throw new AppError('Invalid password', 400);
 
   const token = jwt.sign({ email, id: user.id }, JWT_SECRET, {
     expiresIn: '1h',
@@ -39,7 +40,7 @@ export const loginUser = async (email: string, password: string) => {
 
 export const requestPasswordReset = async (email: string) => {
   const user = await getUserByEmail(email);
-  if (!user) throw new Error('Usuário não encontrado');
+  if (!user) throw new AppError('User not found', 404);
 
   const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: '15m' });
   await saveResetToken(token, email);
@@ -48,7 +49,7 @@ export const requestPasswordReset = async (email: string) => {
 
 export const resetPassword = async (token: string, newPassword: string) => {
   const email = await getEmailByResetToken(token);
-  if (!email) throw new Error('Token inválido ou expirado');
+  if (!email) throw new AppError('Invalid token', 401);
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   await saveUser(email, { email, password: hashedPassword });

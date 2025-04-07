@@ -4,6 +4,7 @@ import cors from 'cors';
 import redis from './config/redis';
 import authRoutes from './routes/authRoutes';
 import cartRoutes from './routes/cartRoutes';
+import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.get('/', async (req: Request, res: Response) => {
   const value = await redis.get('test');
   res.send({ message: value });
 });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 

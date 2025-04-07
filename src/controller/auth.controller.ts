@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import {
   registerUser,
   loginUser,
@@ -10,21 +10,28 @@ export const handleRegister = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   const result = await registerUser(email, password);
-  res.json({ message: 'Usuário cadastrado com sucesso!', id: result.id });
+  res.json({ message: 'User registered!', id: result.id });
 };
 
-export const handleLogin = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  const { token, id } = await loginUser(email, password);
-  res.json({ message: 'Sucesso', token, email, id });
+export const handleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email, password } = req.body;
+    const result = await loginUser(email, password);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const handleForgotPassword = async (req: Request, res: Response) => {
   const { email } = req.body;
 
   await requestPasswordReset(email);
-  res.json({ message: 'Email de recuperação enviado!' });
+  res.json({ message: 'Recovery email sent!' });
 };
 
 export const handleResetPassword = async (req: Request, res: Response) => {
@@ -32,5 +39,5 @@ export const handleResetPassword = async (req: Request, res: Response) => {
   const { password } = req.body;
 
   await resetPassword(token, password);
-  res.json({ message: 'Senha redefinida com sucesso!' });
+  res.json({ message: 'Password reset!' });
 };
