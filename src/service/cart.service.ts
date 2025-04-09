@@ -2,13 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { getCartById, saveCart } from '../model/cart.model';
 import { Cart, CartItem } from '@ecommercebe/types/cart';
 
-const now = new Date();
-const expiresAt = new Date(now.getTime() + 15 * 60 * 1000);
-
 export const createCart = async (
   userId: string,
   items: CartItem[] = [],
 ): Promise<Cart> => {
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 15 * 60 * 1000); // 15 min
+  
   const cartId = uuidv4();
   const cart: Cart = {
     id: cartId,
