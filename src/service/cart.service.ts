@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { saveCart } from '../model/cart.model';
+import { getCartById, saveCart } from '../model/cart.model';
 import { Cart, CartItem } from '@ecommercebe/types/cart';
 
 const now = new Date();
@@ -19,4 +19,8 @@ export const createCart = async (
   };
   await saveCart(cart);
   return cart;
+};
+
+export const getCart = async (cartId: string): Promise<Cart | null> => {
+  return await getCartById(cartId);
 };

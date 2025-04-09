@@ -12,9 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveCart = void 0;
+exports.getCartById = exports.saveCart = void 0;
 const redis_1 = __importDefault(require("../config/redis"));
 const saveCart = (cart) => __awaiter(void 0, void 0, void 0, function* () {
     yield redis_1.default.set(`cart:${cart.id}`, JSON.stringify(cart), 'EX', 60 * 15);
 });
 exports.saveCart = saveCart;
+const getCartById = (cartId) => __awaiter(void 0, void 0, void 0, function* () {
+    const cartData = yield redis_1.default.get(`cart:${cartId}`);
+    if (!cartData)
+        return null;
+    return JSON.parse(cartData);
+});
+exports.getCartById = getCartById;

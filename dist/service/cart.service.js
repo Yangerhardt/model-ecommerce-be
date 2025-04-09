@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCart = void 0;
+exports.getCart = exports.createCart = void 0;
 const uuid_1 = require("uuid");
 const cart_model_1 = require("../model/cart.model");
 const now = new Date();
@@ -27,3 +27,7 @@ const createCart = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, ...args
     return cart;
 });
 exports.createCart = createCart;
+const getCart = (cartId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield (0, cart_model_1.getCartById)(cartId);
+});
+exports.getCart = getCart;

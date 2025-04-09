@@ -38,7 +38,7 @@ const loginUser = (email, password) => __awaiter(void 0, void 0, void 0, functio
     if (!isMatch)
         throw new appError_1.AppError('Invalid password', 400);
     const token = jsonwebtoken_1.default.sign({ email, id: user.id }, JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: '24h',
     });
     return { token, id: user.id };
 });
