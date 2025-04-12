@@ -2,8 +2,9 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import redis from './config/redis';
-import authRoutes from './routes/authRoutes';
-import cartRoutes from './routes/cartRoutes';
+import authRoutes from './routes/auth.routes';
+import cartRoutes from './routes/cart.routes';
+import addressRoutes from './routes/address.routes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(cors());
 
 app.use('/auth', authRoutes);
 app.use('/cart', cartRoutes);
+app.use('/address', addressRoutes);
 
 app.get('/', async (req: Request, res: Response) => {
   await redis.set('test', 'API funcionando!');
