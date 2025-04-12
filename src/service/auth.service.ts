@@ -32,7 +32,7 @@ export const loginUser = async (email: string, password: string) => {
   if (!isMatch) throw new AppError('Invalid password', 400);
 
   const token = jwt.sign({ email, id: user.id }, JWT_SECRET, {
-    expiresIn: '24h',
+    expiresIn: '1d',
   });
 
   return { token, id: user.id };
