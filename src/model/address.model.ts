@@ -11,3 +11,7 @@ export const getUserAddress = async (
   const data = await redis.get(`address:${userId}`);
   return data ? JSON.parse(data) : null;
 };
+
+export const removeUserAddress = async (userId: string) => {
+  await redis.del(`address:${userId}`);
+};

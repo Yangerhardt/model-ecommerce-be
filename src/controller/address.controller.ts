@@ -1,6 +1,10 @@
-import { Response } from 'express';
+import { NextFunction, Response, Request } from 'express';
 import { UserAddressSchema } from '../schema/address.schema';
-import { upsertUserAddress, findUserAddress } from '../service/address.service';
+import {
+  upsertUserAddress,
+  findUserAddress,
+  deleteUserAddress,
+} from '../service/address.service';
 import { AuthRequest } from '@ecommercebe/types/authRequest';
 
 export const handleGetUserAddress = async (req: AuthRequest, res: Response) => {
@@ -39,4 +43,18 @@ export const handleUpsertUserAddress = async (
 
   const address = await upsertUserAddress(userId, parsed.data);
   res.status(200).json(address);
+};
+
+export const handleDeleteUserAddress = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { userId } = req.params;
+    const result = await deleteUserAddress(userId);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
 };

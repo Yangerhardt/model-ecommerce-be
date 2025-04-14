@@ -1,6 +1,11 @@
-import { getUserAddress, saveUserAddress } from '../model/address.model';
+import {
+  getUserAddress,
+  removeUserAddress,
+  saveUserAddress,
+} from '../model/address.model';
 import { v4 as uuidv4 } from 'uuid';
 import { UserAddress } from '../types/address';
+import { NotFoundError } from '../utils/errors';
 
 export const findUserAddress = async (
   userId: string,
@@ -21,4 +26,15 @@ export const upsertUserAddress = async (
 
   await saveUserAddress(userId, finalAddress);
   return finalAddress;
+};
+
+export const deleteUserAddress = async (userId: string) => {
+  const address = await getUserAddress(userId);
+
+  if (!address) {
+    throw new NotFoundError('No address found', 404);
+  }
+
+  await removeUserAddress(userId);
+  return { message: `Address from ${userId} removed \n${address}` };
 };
