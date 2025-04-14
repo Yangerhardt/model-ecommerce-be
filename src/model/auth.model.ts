@@ -16,3 +16,18 @@ export const saveResetToken = async (token: string, email: string) => {
 export const getEmailByResetToken = async (token: string) => {
   return await redis.get(`reset:${token}`);
 };
+
+export const getAllUsersFromRedis = async () => {
+  const keys = await redis.keys('user:*');
+  const users = await Promise.all(
+    keys.map(async (key) => {
+      const data = await redis.get(key);
+      return data ? JSON.parse(data) : null;
+    }),
+  );
+  return users.filter(Boolean);
+};
+
+export const deleteUserFromRedis = async (email: string) => {
+  await redis.del(`user:${email}`);
+};

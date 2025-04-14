@@ -6,6 +6,8 @@ import {
   saveUser,
   saveResetToken,
   getEmailByResetToken,
+  getAllUsersFromRedis,
+  deleteUserFromRedis,
 } from '../model/auth.model';
 import { sendResetEmail } from '../utils/mailer';
 import { AlreadyExists, NotFoundError, ValidationError } from '../utils/errors';
@@ -68,4 +70,33 @@ export const resetPassword = async (token: string, newPassword: string) => {
   await saveUser(email, { email, password: hashedPassword });
 
   return;
+};
+
+export const fetchAllUsers = async () => {
+  return await getAllUsersFromRedis();
+};
+
+export const removeUserByEmail = async (email: string) => {
+  const users = await getAllUsersFromRedis();
+  const user = users.find((u) => u.email === email);
+
+  if (!user) {
+    throw new NotFoundError('User not found', 404);
+  }
+
+  await deleteUserFromRedis(email);
+  return { message: `User ${email} removed.` };
+};
+
+export const promoteUserByEmail = async (email: string) => {
+  const user = await getUserByEmail(email);
+
+  if (!user) {
+    throw new NotFoundError('User not found', 404);
+  }
+
+  user.role = 'admin';
+  await saveUser(email, user);
+
+  return { message: `User ${email} promoted to admin.` };
 };

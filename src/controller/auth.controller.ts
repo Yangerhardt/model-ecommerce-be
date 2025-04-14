@@ -4,6 +4,9 @@ import {
   loginUser,
   requestPasswordReset,
   resetPassword,
+  promoteUserByEmail,
+  fetchAllUsers,
+  removeUserByEmail,
 } from '../service/auth.service';
 
 export const handleRegister = async (req: Request, res: Response) => {
@@ -40,4 +43,45 @@ export const handleResetPassword = async (req: Request, res: Response) => {
 
   await resetPassword(token, password);
   res.json({ message: 'Password reset!' });
+};
+
+export const handleGetAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const users = await fetchAllUsers();
+    res.json(users);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handleDeleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.params;
+    const result = await removeUserByEmail(email);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const handlePromoteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+    const result = await promoteUserByEmail(email);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
 };
