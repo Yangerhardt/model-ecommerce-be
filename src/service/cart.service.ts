@@ -7,7 +7,7 @@ export const createCart = async (
   items: CartItem[] = [],
 ): Promise<Cart> => {
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + 15 * 60 * 1000); // 15 min
+  const expiresAt = new Date(now.getTime() + 60 * 60 * 1000); // 1h
   
   const cartId = uuidv4();
   const cart: Cart = {
