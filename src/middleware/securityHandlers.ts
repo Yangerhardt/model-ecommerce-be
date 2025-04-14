@@ -1,6 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import rateLimit from 'express-rate-limit';
 
 // declare global {
 //   namespace Express {

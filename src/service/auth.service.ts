@@ -12,14 +12,23 @@ import { AlreadyExists, NotFoundError, ValidationError } from '../utils/errors';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export const registerUser = async (email: string, password: string) => {
+export const registerUser = async (
+  email: string,
+  password: string,
+  role: 'user' | 'admin' = 'user',
+) => {
   const existing = await getUserByEmail(email);
   if (existing) throw new AlreadyExists('User already registered', 400);
 
   const userId = uuidv4();
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  await saveUser(email, { id: userId, email, password: hashedPassword });
+  await saveUser(email, {
+    id: userId,
+    email,
+    password: hashedPassword,
+    role: role,
+  });
 
   return { id: userId };
 };
@@ -31,9 +40,13 @@ export const loginUser = async (email: string, password: string) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new ValidationError('Invalid password', 400);
 
-  const token = jwt.sign({ email, id: user.id }, JWT_SECRET, {
-    expiresIn: '1d',
-  });
+  const token = jwt.sign(
+    { email, id: user.id, role: user.role ?? 'user' },
+    JWT_SECRET,
+    {
+      expiresIn: '1d',
+    },
+  );
 
   return { token, id: user.id };
 };
