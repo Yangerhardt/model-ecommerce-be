@@ -6,15 +6,16 @@ import authRoutes from './routes/auth.routes';
 import cartRoutes from './routes/cart.routes';
 import addressRoutes from './routes/address.routes';
 import { errorHandler } from './middleware/errorHandler';
+import { rateLimitHandler } from './middleware/rateLimitHandler';
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.use('/auth', authRoutes);
-app.use('/cart', cartRoutes);
-app.use('/address', addressRoutes);
+app.use('/auth', rateLimitHandler, authRoutes);
+app.use('/cart', rateLimitHandler, cartRoutes);
+app.use('/address', rateLimitHandler, addressRoutes);
 
 app.get('/', async (req: Request, res: Response) => {
   await redis.set('test', 'API funcionando!');
