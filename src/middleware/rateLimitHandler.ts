@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 
 export const rateLimitHandler = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 50,
+  max: 100,
   message: 'Too many requests from this IP, please try again later.',
   handler: (req: Request, res: Response, next: NextFunction) => {
     res.status(429).json({

@@ -1,3 +1,9 @@
+export interface AppliedCoupon {
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+}
+
 export interface CartItem {
   sku: string;
   name: string;
@@ -13,6 +19,7 @@ export interface Cart {
   userId: string;
   totalQuantity?: number;
   totalPrice?: number;
+  appliedCoupon?: AppliedCoupon;
   createdAt?: Date;
   expiresAt?: Date;
 }
