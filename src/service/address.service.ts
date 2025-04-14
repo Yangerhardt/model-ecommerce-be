@@ -1,4 +1,3 @@
-import { UserAddressInput } from '../schema/address.schema';
 import { getUserAddress, saveUserAddress } from '../model/address.model';
 import { v4 as uuidv4 } from 'uuid';
 import { UserAddress } from '../types/address';

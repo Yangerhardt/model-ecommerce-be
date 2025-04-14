@@ -1,13 +1,13 @@
+import redis from '../config/redis';
 import { UserAddress } from '../types/address';
 
-const addressStore = new Map<string, UserAddress>();
-
 export const saveUserAddress = async (userId: string, address: UserAddress) => {
-  addressStore.set(userId, { ...address, userId });
+  await redis.set(`address:${userId}`, JSON.stringify({ ...address, userId }));
 };
 
 export const getUserAddress = async (
   userId: string,
 ): Promise<UserAddress | null> => {
-  return addressStore.get(userId) || null;
+  const data = await redis.get(`address:${userId}`);
+  return data ? JSON.parse(data) : null;
 };
