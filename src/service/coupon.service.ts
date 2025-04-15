@@ -1,9 +1,13 @@
 import { Coupon } from '../types/coupon';
-import { getCoupon, saveCoupon, deleteCoupon } from '../model/coupon.model';
+import {
+  getCouponByCode,
+  saveCoupon,
+  deleteCoupon,
+} from '../model/coupon.model';
 import { NotFoundError } from '../utils/errors';
 
 export const findCoupon = async (code: string): Promise<Coupon> => {
-  const coupon = await getCoupon(code);
+  const coupon = await getCouponByCode(code);
   if (!coupon || !coupon.isActive) {
     throw new NotFoundError('Coupon not found or inactive', 404);
   }
@@ -16,7 +20,7 @@ export const createOrUpdateCoupon = async (data: Coupon): Promise<Coupon> => {
 };
 
 export const removeCoupon = async (code: string) => {
-  const coupon = await getCoupon(code);
+  const coupon = await getCouponByCode(code);
   if (!coupon) {
     throw new NotFoundError('Coupon not found', 404);
   }

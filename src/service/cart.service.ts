@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getCartById, saveCart } from '../model/cart.model';
-import { Cart, CartItem } from '@ecommercebe/types/cart';
+import { getCartById, saveCart, updateCart } from '../model/cart.model';
+import { Cart, CartCoupon, CartItem } from '@ecommercebe/src/types/cart';
+import { NotFoundError, ValidationError } from '../utils/errors';
+import { getCouponByCode } from '../model/coupon.model';
 
 const handleCartTotal = (
   items: CartItem[],
@@ -40,4 +42,43 @@ export const createCart = async (
 
 export const getCart = async (cartId: string): Promise<Cart | null> => {
   return await getCartById(cartId);
+};
+
+export const applyCouponToCart = async (cartId: string, couponCode: string) => {
+  const cart = await getCart(cartId);
+  if (!cart) throw new NotFoundError('Cart not found', 404);
+
+  const coupon = await getCouponByCode(couponCode);
+  if (!coupon || !coupon.isActive) {
+    throw new ValidationError('Invalid or inactive coupon', 400);
+  }
+
+  const now = new Date();
+  if (coupon.expiresAt && new Date(coupon.expiresAt) < now) {
+    throw new ValidationError('Coupon expired', 400);
+  }
+
+  const originalTotal = cart.totalPrice ?? 0;
+  let discount = 0;
+
+  if (coupon.discountType === 'percentage') {
+    discount = (originalTotal * coupon.discountValue) / 100;
+  } else {
+    discount = coupon.discountValue;
+  }
+
+  const finalTotal = Math.max(originalTotal - discount, 0);
+
+  const cartCoupon: CartCoupon = {
+    code: coupon.code,
+    discountType: coupon.discountType,
+    discountValue: coupon.discountValue,
+    appliedAt: now.toISOString(),
+  };
+
+  return await updateCart(cartId, {
+    coupon: cartCoupon,
+    discountAmount: discount,
+    totalPrice: finalTotal,
+  });
 };

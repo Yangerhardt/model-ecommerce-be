@@ -1,7 +1,11 @@
-import { Response } from 'express';
-import { createCart, getCart } from '../service/cart.service';
-import { AuthRequest } from '@ecommercebe/types/authRequest';
+import { NextFunction, Response, Request } from 'express';
+import {
+  applyCouponToCart,
+  createCart,
+  getCart,
+} from '../service/cart.service';
 import { CreateCartSchema } from '../schema/cart.schema';
+import { AuthRequest } from '@ecommercebe/src/types/authRequest';
 
 export const handleCreateCart = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
@@ -62,4 +66,25 @@ export const handleGetCart = async (req: AuthRequest, res: Response) => {
   }
 
   res.status(200).json(cart);
+};
+
+export const handleApplyCoupon = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { cartId, couponCode } = req.body;
+
+    if (!cartId || !couponCode) {
+      return res
+        .status(400)
+        .json({ error: 'cartId and couponCode are required' });
+    }
+
+    const updatedCart = await applyCouponToCart(cartId, couponCode);
+    res.status(200).json(updatedCart);
+  } catch (error) {
+    next(error);
+  }
 };

@@ -5,7 +5,7 @@ import {
   findUserAddress,
   deleteUserAddress,
 } from '../service/address.service';
-import { AuthRequest } from '@ecommercebe/types/authRequest';
+import { AuthRequest } from '@ecommercebe/src/types/authRequest';
 
 export const handleGetUserAddress = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
