@@ -16,8 +16,8 @@ export interface CartItem {
 
 export interface Cart {
   id: string;
-  items: CartItem[];
   userId: string;
+  items: CartItem[];
   totalQuantity?: number;
   totalPrice?: number;
   coupon?: CartCoupon;

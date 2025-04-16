@@ -22,20 +22,14 @@ export class AlreadyExists extends Error {
 }
 
 export class NotFoundError extends Error {
-  code: number;
+  public statusCode: number;
 
-  constructor(message: string, code: number) {
+  constructor(message: string, statusCode = 404) {
     super(message);
     this.name = 'NotFoundError';
-    this.code = code;
-    this.message = message;
-  }
+    this.statusCode = statusCode;
 
-  toJSON(): CustomError {
-    return {
-      code: this.code,
-      message: this.message,
-    };
+    Object.setPrototypeOf(this, NotFoundError.prototype);
   }
 }
 
@@ -58,22 +52,14 @@ export class NotAllowedError extends Error {
 }
 
 export class ValidationError extends Error {
-  code: number;
-  errors?: any[];
+  public statusCode: number;
 
-  constructor(message: string, code: number, errors?: any[]) {
+  constructor(message: string, statusCode = 400) {
     super(message);
     this.name = 'ValidationError';
-    this.code = code;
-    this.errors = errors;
-  }
+    this.statusCode = statusCode;
 
-  toJSON(): any {
-    return {
-      code: this.code,
-      message: this.message,
-      errors: this.errors,
-    };
+    Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
 
