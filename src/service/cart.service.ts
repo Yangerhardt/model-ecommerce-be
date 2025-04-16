@@ -58,6 +58,10 @@ export const applyCouponToCart = async (cartId: string, couponCode: string) => {
     throw new ValidationError('Coupon expired', 400);
   }
 
+  if (cart.coupon && cart.coupon.code === couponCode) {
+    throw new ValidationError('Coupon already applied', 400);
+  }
+
   const originalTotal = cart.totalPrice ?? 0;
   let discount = 0;
 
