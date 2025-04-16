@@ -86,3 +86,18 @@ export const applyCouponToCart = async (cartId: string, couponCode: string) => {
     totalPrice: finalTotal,
   });
 };
+
+export const removeCouponFromCart = async (cartId: string) => {
+  const cart = await getCart(cartId);
+  if (!cart) throw new NotFoundError('Cart not found', 404);
+
+  if (!cart.coupon) {
+    throw new ValidationError('No coupon applied', 400);
+  }
+
+  return await updateCart(cartId, {
+    coupon: undefined,
+    discountAmount: 0,
+    totalPrice: cart.totalPrice! + cart.discountAmount!,
+  });
+};

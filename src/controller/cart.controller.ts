@@ -3,6 +3,7 @@ import {
   applyCouponToCart,
   createCart,
   getCart,
+  removeCouponFromCart,
 } from '../service/cart.service';
 import { CreateCartSchema } from '../schema/cart.schema';
 import { AuthRequest } from '@ecommercebe/src/types/authRequest';
@@ -83,6 +84,25 @@ export const handleApplyCoupon = async (
     }
 
     const updatedCart = await applyCouponToCart(cartId, couponCode);
+    res.status(200).json(updatedCart);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handleRemoveCoupon = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { cartId } = req.body;
+
+    if (!cartId) {
+      return res.status(400).json({ error: 'cartId is required' });
+    }
+
+    const updatedCart = await removeCouponFromCart(cartId);
     res.status(200).json(updatedCart);
   } catch (error) {
     next(error);

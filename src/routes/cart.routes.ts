@@ -3,6 +3,7 @@ import {
   handleApplyCoupon,
   handleCreateCart,
   handleGetCart,
+  handleRemoveCoupon,
 } from '../controller/cart.controller';
 import { asyncHandler } from '../middleware/asyncHandler';
 import { authMiddleware } from '../middleware/authMiddleware';
@@ -15,6 +16,11 @@ cartRoutes.post(
   '/apply-coupon',
   authMiddleware,
   asyncHandler(handleApplyCoupon),
+);
+cartRoutes.post(
+  '/remove-coupon',
+  authMiddleware,
+  asyncHandler(handleRemoveCoupon),
 );
 
 export default cartRoutes;
