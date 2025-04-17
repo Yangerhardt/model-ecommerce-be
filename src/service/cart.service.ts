@@ -26,6 +26,7 @@ export const createCart = async (
   const expiresAt = new Date(now.getTime() + 60 * 60 * 1000); // 1h
   const { totalQuantity, totalPrice } = handleCartTotal(items);
 
+  const originalTotalPrice = totalPrice;
   const cartId = uuidv4();
   const cart: Cart = {
     id: cartId,
@@ -35,6 +36,7 @@ export const createCart = async (
     expiresAt,
     totalPrice,
     totalQuantity,
+    originalTotalPrice,
   };
   await saveCart(cart);
   return cart;
