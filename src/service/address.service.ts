@@ -5,7 +5,7 @@ import {
 } from '../model/address.model';
 import { v4 as uuidv4 } from 'uuid';
 import { UserAddress } from '../types/address';
-import { NotFoundError } from '../utils/errors';
+import { NotFoundError, ValidationError } from '../utils/errors';
 
 export const findUserAddress = async (
   userId: string,

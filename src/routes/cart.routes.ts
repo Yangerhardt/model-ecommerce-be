@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import {
+  handleShippingCart,
+  handleAddressCart,
   handleApplyCoupon,
   handleCreateCart,
   handleGetCart,
@@ -22,5 +24,7 @@ cartRoutes.post(
   authMiddleware,
   asyncHandler(handleRemoveCoupon),
 );
+cartRoutes.post('/address', authMiddleware, asyncHandler(handleAddressCart));
+cartRoutes.post('/shipping', authMiddleware, asyncHandler(handleShippingCart));
 
 export default cartRoutes;

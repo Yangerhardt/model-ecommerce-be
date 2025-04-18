@@ -1,8 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getCartById, saveCart, updateCart } from '../model/cart.model';
-import { Cart, CartCoupon, CartItem } from '@ecommercebe/src/types/cart';
+import {
+  Cart,
+  CartCoupon,
+  CartItem,
+  ShippingOptions,
+} from '@ecommercebe/src/types/cart';
 import { NotFoundError, ValidationError } from '../utils/errors';
 import { getCouponByCode } from '../model/coupon.model';
+import { getUserAddress } from '../model/address.model';
+import { getShippingOptions, getValidatedCepInfo } from './shipping.service';
 
 const handleCartTotal = (
   items: CartItem[],
@@ -101,5 +108,48 @@ export const removeCouponFromCart = async (cartId: string) => {
     coupon: undefined,
     discountAmount: 0,
     totalPrice: cart.totalPrice! + cart.discountAmount!,
+  });
+};
+
+export const applyAddressToCart = async (cartId: string, userId: string) => {
+  const cart = await getCart(cartId);
+  if (!cart) throw new NotFoundError('Cart not found', 404);
+
+  const address = await getUserAddress(userId);
+  if (!address) throw new NotFoundError('User address not found', 404);
+
+  await getValidatedCepInfo(address.zip);
+
+  return await updateCart(cartId, {
+    shippingAddress: address,
+  });
+};
+
+export const calculateAndApplyShippingCost = async (
+  cartId: string,
+  userId: string,
+) => {
+  const cart = await getCart(cartId);
+  if (!cart) throw new NotFoundError('Cart not found', 404);
+
+  const address = await getUserAddress(userId);
+  if (!address) throw new NotFoundError('User address not found', 404);
+
+  const shippingOptions: ShippingOptions[] = await getShippingOptions(
+    address.zip,
+  );
+  const shippingCost = shippingOptions.filter((option) => !option.error)?.[0];
+
+  return await updateCart(cartId, {
+    shippingCost: {
+      id: shippingCost.id,
+      name: shippingCost.name,
+      price: shippingCost.price,
+      custom_price: shippingCost.custom_price,
+      discount: shippingCost.discount,
+      currency: shippingCost.currency,
+      delivery_time: shippingCost.delivery_time,
+    },
+    totalPrice: cart.totalPrice + parseFloat(shippingCost.price),
   });
 };

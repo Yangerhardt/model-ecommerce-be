@@ -1,6 +1,8 @@
 import { NextFunction, Response, Request } from 'express';
 import {
+  applyAddressToCart,
   applyCouponToCart,
+  calculateAndApplyShippingCost,
   createCart,
   getCart,
   removeCouponFromCart,
@@ -103,6 +105,51 @@ export const handleRemoveCoupon = async (
     }
 
     const updatedCart = await removeCouponFromCart(cartId);
+    res.status(200).json(updatedCart);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handleAddressCart = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { cartId } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (!cartId) {
+      return res.status(400).json({ error: 'cartId is required' });
+    }
+
+    const updatedCart = await applyAddressToCart(cartId, userId);
+    res.status(200).json(updatedCart);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handleShippingCart = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { cartId } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const updatedCart = await calculateAndApplyShippingCost(cartId, userId);
+
     res.status(200).json(updatedCart);
   } catch (error) {
     next(error);

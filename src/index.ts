@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes';
 import cartRoutes from './routes/cart.routes';
 import addressRoutes from './routes/address.routes';
 import couponRoutes from './routes/coupon.routes';
+import shippingRoutes from './routes/shipping.routes';
 import { errorHandler } from './middleware/errorHandler';
 import { rateLimitHandler } from './middleware/rateLimitHandler';
 
@@ -18,6 +19,7 @@ app.use('/auth', rateLimitHandler, authRoutes);
 app.use('/cart', rateLimitHandler, cartRoutes);
 app.use('/address', rateLimitHandler, addressRoutes);
 app.use('/coupon', rateLimitHandler, couponRoutes);
+app.use('/shipping', rateLimitHandler, shippingRoutes);
 
 app.get('/', async (req: Request, res: Response) => {
   await redis.set('test', 'API funcionando!');
