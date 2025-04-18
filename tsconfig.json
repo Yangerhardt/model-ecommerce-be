@@ -5,6 +5,8 @@
     "outDir": "./dist",
     "rootDir": "src",
     "strict": true,
+    "types": ["jest", "node"],
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
@@ -12,5 +14,6 @@
       "@ecommercebe/*": ["./*"]
     }
   },
+  "include": ["src/**/*", "**/*.test.ts"],
   "exclude": ["node_modules"]
 }
