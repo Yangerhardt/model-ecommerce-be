@@ -1,5 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getCartById, saveCart, updateCart } from '../model/cart.model';
+import {
+  getCartById,
+  removeCart,
+  saveCart,
+  updateCart,
+} from '../model/cart.model';
 import {
   Cart,
   CartCoupon,
@@ -51,6 +56,13 @@ export const createCart = async (
 
 export const getCart = async (cartId: string): Promise<Cart | null> => {
   return await getCartById(cartId);
+};
+
+export const deleteCart = async (cartId: string): Promise<void> => {
+  const cart = await getCartById(cartId);
+  if (!cart) throw new NotFoundError('Cart not found', 404);
+
+  await removeCart(cartId);
 };
 
 export const applyCouponToCart = async (cartId: string, couponCode: string) => {

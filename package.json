@@ -26,7 +26,6 @@
     "start": "tsc && node dist/index.js",
     "deploy": "npm install --production && npm run build && npm start",
     "test": "jest",
-    "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
   "devDependencies": {

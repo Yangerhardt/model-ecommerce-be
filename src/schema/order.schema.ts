@@ -1,21 +1,33 @@
 import { z } from 'zod';
 
-const baseOrderSchema = z.object({
-  userId: z
-    .string({
-      required_error: 'User id is required',
-      invalid_type_error: 'User id must be a string',
-    })
-    .min(1, { message: 'User id can not be empty' }),
+export const PaymentMethodSchema = z.enum(['boleto', 'card']);
 
-  totalAmount: z
-    .number({
-      required_error: 'Total amount is required',
-      invalid_type_error: 'Total amount must be a number',
-    })
-    .positive(),
+export const CreateOrderSchema = z.object({
+  cartId: z.string().uuid(),
+  paymentMethod: PaymentMethodSchema,
 });
 
-export const createOrderSchema = baseOrderSchema.strict();
+export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
 
-export const updateOrderSchema = baseOrderSchema.partial();
+export const OrderStatusSchema = z.enum([
+  'pending',
+  'processing',
+  'paid',
+  'shipped',
+  'delivered',
+  'cancelled',
+]);
+
+export const UpdateOrderStatusSchema = z.object({
+  orderId: z.string().uuid(),
+  status: OrderStatusSchema,
+});
+
+export type UpdateOrderStatusInput = z.infer<typeof UpdateOrderStatusSchema>;
+
+export const GetOrdersQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+});
+
+export type GetOrdersQueryInput = z.infer<typeof GetOrdersQuerySchema>;

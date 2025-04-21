@@ -4,6 +4,7 @@ import {
   applyCouponToCart,
   calculateAndApplyShippingCost,
   createCart,
+  deleteCart,
   getCart,
   removeCouponFromCart,
 } from '../service/cart.service';
@@ -69,6 +70,34 @@ export const handleGetCart = async (req: AuthRequest, res: Response) => {
   }
 
   res.status(200).json(cart);
+};
+
+export const handleDeleteCart = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const cartId = req.params.id;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'User not authenticated' });
+  }
+
+  if (!cartId) {
+    return res.status(400).json({ error: 'Cart ID is required' });
+  }
+
+  const cart = await getCart(cartId);
+
+  if (!cart) {
+    return res.status(404).json({ error: 'Cart not found' });
+  }
+
+  if (cart.userId !== userId) {
+    return res
+      .status(403)
+      .json({ error: 'Access denied: this cart does not belong to you' });
+  }
+
+  await deleteCart(cartId);
+  res.status(200).json({ message: 'Cart deleted successfully' });
 };
 
 export const handleApplyCoupon = async (
