@@ -16,7 +16,7 @@ orderRoutes.post(
 );
 orderRoutes.get('/:orderId', authMiddleware, asyncHandler(handleGetOrder));
 orderRoutes.get(
-  '/user-orders',
+  '/all/user-orders',
   authMiddleware,
   asyncHandler(handleGetUserOrders),
 );
