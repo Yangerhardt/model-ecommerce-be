@@ -1,4 +1,4 @@
-import { Order } from '@ecommercebe/src/types/order';
+import { Order, Payment } from '@ecommercebe/src/types/order';
 import { getCartById, removeCart } from '../model/cart.model';
 import {
   saveOrder,
@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const createOrderFromCart = async (
   cartId: string,
-  paymentMethod: Order['paymentMethod'],
+  payment: Payment,
 ): Promise<Order> => {
   const cart = await getCartById(cartId);
   if (!cart) throw new NotFoundError('Cart not found', 404);
@@ -30,12 +30,13 @@ export const createOrderFromCart = async (
     shippingAddress: cart.shippingAddress,
     shippingCost: cart.shippingCost,
     totalPrice: cart.totalPrice,
+    totalQuantity: cart.totalQuantity,
     originalTotalPrice: cart.originalTotalPrice,
     discountAmount: cart.discountAmount,
     status: 'pending',
     createdAt: now,
     updatedAt: now,
-    paymentMethod,
+    payment,
   };
 
   await saveOrder(order);

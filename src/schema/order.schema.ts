@@ -1,10 +1,26 @@
 import { z } from 'zod';
 
-export const PaymentMethodSchema = z.enum(['boleto', 'card']);
+const CardSchema = z.object({
+  brand: z.string(),
+  last4: z.string().length(4),
+  expirationDate: z.string().min(1).max(12),
+});
+
+export const PaymentSchema = z.object({
+  method: z.enum(['boleto', 'card']),
+  status: z.enum(['pending', 'paid', 'refunded', 'cancelled']),
+  transactionId: z.string().optional(),
+  amount: z.number(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  card: CardSchema.optional(),
+});
+
+export type Payment = z.infer<typeof PaymentSchema>;
 
 export const CreateOrderSchema = z.object({
   cartId: z.string().uuid(),
-  paymentMethod: PaymentMethodSchema,
+  payment: PaymentSchema,
 });
 
 export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;

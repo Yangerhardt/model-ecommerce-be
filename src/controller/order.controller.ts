@@ -6,6 +6,7 @@ import {
 } from '../service/order.service';
 import { AuthRequest } from '@ecommercebe/src/types/authRequest';
 import { CreateOrderSchema } from '../schema/order.schema';
+import { Brand } from '../types/order';
 
 export const handleCreateOrder = async (
   req: AuthRequest,
@@ -15,16 +16,28 @@ export const handleCreateOrder = async (
   try {
     const parseResult = CreateOrderSchema.safeParse(req.body);
     if (!parseResult.success) {
+      console.log('#############', parseResult.error.errors);
       return res.status(400).json({
         error: 'Invalid order payload',
         issues: parseResult.error.errors,
       });
     }
 
-    const { cartId, paymentMethod } = parseResult.data;
+    const { cartId, payment } = parseResult.data;
     const userId = req.user?.id;
 
-    const order = await createOrderFromCart(cartId, paymentMethod);
+    const mappedPayment = {
+      ...payment,
+      card: payment.card
+        ? {
+            ...payment.card,
+            expirationDate: payment.card.expirationDate,
+            brand: payment.card.brand as Brand,
+          }
+        : undefined,
+    };
+
+    const order = await createOrderFromCart(cartId, mappedPayment);
 
     if (order.userId !== userId) {
       return res

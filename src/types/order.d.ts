@@ -1,4 +1,4 @@
-import { CartCoupon, CartItem, ShippingOptions } from './cart';
+import { Cart } from './cart';
 import { UserAddress } from './address';
 
 export type OrderStatus =
@@ -8,18 +8,35 @@ export type OrderStatus =
   | 'delivered'
   | 'cancelled';
 
-export interface Order {
+export type Brand =
+  | 'visa'
+  | 'mastercard'
+  | 'amex'
+  | 'diners'
+  | 'elo'
+  | 'discover';
+
+type Card = {
+  brand: Brand;
+  last4: string;
+  expirationDate: string;
+  name?: string;
+};
+
+export type Payment = {
+  method: 'boleto' | 'card';
+  status: 'pending' | 'paid' | 'refunded' | 'cancelled';
+  transactionId?: string;
+  amount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  card?: Card;
+};
+
+export interface Order extends Cart {
   id: string;
-  userId: string;
-  items: CartItem[];
-  coupon?: CartCoupon;
-  shippingAddress: UserAddress;
-  shippingCost: ShippingOptions;
-  totalPrice: number;
-  originalTotalPrice: number;
-  discountAmount?: number;
   status: OrderStatus;
   createdAt: Date;
   updatedAt: Date;
-  paymentMethod: 'boleto' | 'card';
+  payment: Payment;
 }
