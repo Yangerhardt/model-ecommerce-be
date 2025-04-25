@@ -53,7 +53,7 @@ export const handleCreateOrder = async (
 
 export const handleGetOrder = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
-  const orderId = req.params.id;
+  const { orderId } = req.params;
 
   if (!orderId) {
     return res.status(400).json({ error: 'Order ID is required' });
