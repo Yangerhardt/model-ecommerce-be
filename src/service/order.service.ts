@@ -1,9 +1,11 @@
-import { Order, Payment } from '@ecommercebe/src/types/order';
+import { Order, OrderStatus, Payment } from '@ecommercebe/src/types/order';
 import { getCartById, removeCart } from '../model/cart.model';
 import {
   saveOrder,
   getOrderById,
   getOrdersByUserId,
+  updateOrder,
+  removeOrder,
 } from '../model/order.model';
 import { NotFoundError, ValidationError } from '../utils/errors';
 import { v4 as uuidv4 } from 'uuid';
@@ -53,4 +55,25 @@ export const getOrdersByUser = async (
   userId: string,
 ): Promise<Order[] | null> => {
   return await getOrdersByUserId(userId);
+};
+
+export const cancelOrder = async (orderId: string): Promise<Order | null> => {
+  const order = await getOrderById(orderId);
+  if (!order) throw new NotFoundError('Order not found', 404);
+
+  const updatedOrder = {
+    ...order,
+    status: 'canceled' as OrderStatus,
+    updatedAt: new Date(),
+  };
+
+  await updateOrder(orderId, updatedOrder);
+  return updatedOrder;
+};
+
+export const deleteOrder = async (orderId: string): Promise<void> => {
+  const order = await getOrderById(orderId);
+  if (!order) throw new NotFoundError('Order not found', 404);
+
+  await removeOrder(orderId);
 };

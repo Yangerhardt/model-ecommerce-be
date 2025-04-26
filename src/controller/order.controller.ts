@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import {
+  cancelOrder,
   createOrderFromCart,
+  deleteOrder,
   getOrder,
   getOrdersByUser,
 } from '../service/order.service';
@@ -84,4 +86,47 @@ export const handleGetUserOrders = async (req: AuthRequest, res: Response) => {
   const orders = await getOrdersByUser(userId);
 
   res.status(200).json(orders ?? []);
+};
+
+export const handleCancelOrder = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const { orderId } = req.params;
+
+  if (!orderId) {
+    return res.status(400).json({ error: 'Order ID is required' });
+  }
+
+  const order = await getOrder(orderId);
+
+  if (!order) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
+
+  if (order.userId !== userId) {
+    return res
+      .status(403)
+      .json({ error: 'Access denied: this order does not belong to you' });
+  }
+
+  const canceledOrder = await cancelOrder(orderId);
+
+  res.status(200).json(canceledOrder);
+};
+
+export const handleDeleteOrder = async (req: AuthRequest, res: Response) => {
+  const { orderId } = req.params;
+
+  if (!orderId) {
+    return res.status(400).json({ error: 'Order ID is required' });
+  }
+
+  const order = await getOrder(orderId);
+
+  if (!order) {
+    return res.status(404).json({ error: 'Order not found' });
+  }
+
+  await deleteOrder(orderId);
+
+  res.status(200).json({ message: 'Order deleted successfully' });
 };

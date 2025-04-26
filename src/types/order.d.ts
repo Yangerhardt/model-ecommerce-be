@@ -6,7 +6,7 @@ export type OrderStatus =
   | 'paid'
   | 'shipped'
   | 'delivered'
-  | 'cancelled';
+  | 'canceled';
 
 export type Brand =
   | 'visa'

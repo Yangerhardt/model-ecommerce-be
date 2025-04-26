@@ -42,4 +42,5 @@ export const updateOrder = async (
 
 export const removeOrder = async (orderId: string): Promise<void> => {
   await redis.del(`order:${orderId}`);
+  await redis.del(`user:orders:${orderId}`);
 };
