@@ -5,7 +5,11 @@ export const saveOrder = async (order: Order): Promise<void> => {
   await redis.set(`order:${order.id}`, JSON.stringify(order));
 
   const existing = await getOrdersByUserId(order.userId);
-  const updatedOrders = existing ? [...existing, order] : [order];
+
+  const updatedOrders = existing
+    ? existing.map((o) => (o.id === order.id ? order : o))
+    : [order];
+
   await redis.set(`user:orders:${order.userId}`, JSON.stringify(updatedOrders));
 };
 
