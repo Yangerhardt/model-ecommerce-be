@@ -4,11 +4,13 @@ import { Order } from '@ecommercebe/src/types/order';
 export const saveOrder = async (order: Order): Promise<void> => {
   await redis.set(`order:${order.id}`, JSON.stringify(order));
 
-  const existing = await getOrdersByUserId(order.userId);
+  const existing = (await getOrdersByUserId(order.userId)) || [];
 
-  const updatedOrders = existing
+  const orderExists = existing.some((o) => o.id === order.id);
+
+  const updatedOrders = orderExists
     ? existing.map((o) => (o.id === order.id ? order : o))
-    : [order];
+    : [...existing, order];
 
   await redis.set(`user:orders:${order.userId}`, JSON.stringify(updatedOrders));
 };
@@ -47,4 +49,15 @@ export const updateOrder = async (
 export const removeOrder = async (orderId: string): Promise<void> => {
   await redis.del(`order:${orderId}`);
   await redis.del(`user:orders:${orderId}`);
+};
+
+export const getAllOrdersFromRedis = async () => {
+  const keys = await redis.keys('order:*');
+  const users = await Promise.all(
+    keys.map(async (key) => {
+      const data = await redis.get(key);
+      return data ? JSON.parse(data) : null;
+    }),
+  );
+  return users.filter(Boolean);
 };

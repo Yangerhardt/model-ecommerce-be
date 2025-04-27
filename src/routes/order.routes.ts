@@ -5,6 +5,7 @@ import {
   handleCancelOrder,
   handleCreateOrder,
   handleDeleteOrder,
+  handleGetAllOrders,
   handleGetOrder,
   handleGetUserOrders,
 } from '../controller/order.controller';
@@ -34,5 +35,6 @@ orderRoutes.delete(
   isAdmin,
   asyncHandler(handleDeleteOrder),
 );
+orderRoutes.get('/orders/all', authMiddleware, isAdmin, handleGetAllOrders);
 
 export default orderRoutes;

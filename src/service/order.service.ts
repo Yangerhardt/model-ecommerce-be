@@ -6,6 +6,7 @@ import {
   getOrdersByUserId,
   updateOrder,
   removeOrder,
+  getAllOrdersFromRedis,
 } from '../model/order.model';
 import { NotFoundError, ValidationError } from '../utils/errors';
 import { v4 as uuidv4 } from 'uuid';
@@ -76,4 +77,8 @@ export const deleteOrder = async (orderId: string): Promise<void> => {
   if (!order) throw new NotFoundError('Order not found', 404);
 
   await removeOrder(orderId);
+};
+
+export const fetchAllOrders = async () => {
+  return await getAllOrdersFromRedis();
 };

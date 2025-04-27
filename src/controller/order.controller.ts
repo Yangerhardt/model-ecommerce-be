@@ -3,6 +3,7 @@ import {
   cancelOrder,
   createOrderFromCart,
   deleteOrder,
+  fetchAllOrders,
   getOrder,
   getOrdersByUser,
 } from '../service/order.service';
@@ -129,4 +130,17 @@ export const handleDeleteOrder = async (req: AuthRequest, res: Response) => {
   await deleteOrder(orderId);
 
   res.status(200).json({ message: 'Order deleted successfully' });
+};
+
+export const handleGetAllOrders = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const users = await fetchAllOrders();
+    res.json(users);
+  } catch (err) {
+    next(err);
+  }
 };
