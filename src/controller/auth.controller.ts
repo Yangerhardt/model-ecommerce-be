@@ -3,11 +3,13 @@ import {
   registerUser,
   loginUser,
   requestPasswordReset,
-  resetPassword,
+  resetPasswordWithToken,
   promoteUserByEmail,
   fetchAllUsers,
   removeUserByEmail,
+  changePassword,
 } from '../service/auth.service';
+import { AuthRequest } from '../types/authRequest';
 
 export const handleRegister = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -37,12 +39,36 @@ export const handleForgotPassword = async (req: Request, res: Response) => {
   res.json({ message: 'Recovery email sent!' });
 };
 
-export const handleResetPassword = async (req: Request, res: Response) => {
+export const handleResetPasswordWithToken = async (
+  req: Request,
+  res: Response,
+) => {
   const { token } = req.params;
   const { password } = req.body;
 
-  await resetPassword(token, password);
+  await resetPasswordWithToken(token, password);
   res.json({ message: 'Password reset!' });
+};
+
+export const handleChangePassword = async (req: AuthRequest, res: Response) => {
+  const userId = req.user?.id;
+  const email = req.user?.email;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  if (!email) {
+    return res.status(401).json({ error: 'Email not found' });
+  }
+
+  const { currentPassword, newPassword } = req.body;
+
+  if (newPassword === currentPassword) {
+    return res.status(401).json({ error: 'Can not use same password' });
+  }
+
+  await changePassword(currentPassword, newPassword, email);
+  res.status(200).json({ message: 'Password reset!' });
 };
 
 export const handleGetAllUsers = async (

@@ -62,12 +62,32 @@ export const requestPasswordReset = async (email: string) => {
   await sendResetEmail(email, token);
 };
 
-export const resetPassword = async (token: string, newPassword: string) => {
+export const resetPasswordWithToken = async (
+  token: string,
+  newPassword: string,
+) => {
   const email = await getEmailByResetToken(token);
   if (!email) throw new ValidationError('Invalid token', 401);
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   await saveUser(email, { email, password: hashedPassword });
+
+  return;
+};
+
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string,
+  email: string,
+) => {
+  const user = await getUserByEmail(email);
+  if (!user) throw new NotFoundError('User not found', 404);
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) throw new ValidationError('Invalid password', 400);
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  await saveUser(email, { ...user, email, password: hashedPassword });
 
   return;
 };
