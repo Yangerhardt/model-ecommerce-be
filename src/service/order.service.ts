@@ -32,14 +32,18 @@ export const createOrderFromCart = async (
     coupon: cart.coupon,
     shippingAddress: cart.shippingAddress,
     shippingCost: cart.shippingCost,
-    totalPrice: cart.totalPrice,
     totalQuantity: cart.totalQuantity,
-    originalTotalPrice: cart.originalTotalPrice,
     discountAmount: cart.discountAmount,
     status: 'pending',
     createdAt: now,
     updatedAt: now,
     payment,
+    price: {
+      originalTotal: cart.price.originalTotal,
+      finalTotal: cart.price.finalTotal,
+      discountTotal: cart.price?.discountTotal,
+      shippingTotal: cart.price?.shippingTotal,
+    },
   };
 
   await saveOrder(order);

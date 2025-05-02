@@ -46,9 +46,11 @@ export const createCart = async (
     items,
     createdAt: now,
     expiresAt,
-    totalPrice,
+    price: {
+      originalTotal: originalTotalPrice,
+      finalTotal: originalTotalPrice,
+    },
     totalQuantity,
-    originalTotalPrice,
   };
   await saveCart(cart);
   return cart;
@@ -83,16 +85,15 @@ export const applyCouponToCart = async (cartId: string, couponCode: string) => {
     throw new ValidationError('Coupon already applied', 400);
   }
 
-  const originalTotal = cart.totalPrice ?? 0;
+  const originalTotal = cart.price?.originalTotal ?? 0;
+  const shippingTotal = cart.price?.shippingTotal ?? 0;
   let discount = 0;
 
   if (coupon.discountType === 'percentage') {
-    discount = (originalTotal * coupon.discountValue) / 100;
+    discount = ((originalTotal * coupon.discountValue) / 100) * -1;
   } else {
-    discount = coupon.discountValue;
+    discount = coupon.discountValue * -1;
   }
-
-  const finalTotal = Math.max(originalTotal - discount, 0);
 
   const cartCoupon: CartCoupon = {
     code: coupon.code,
@@ -104,7 +105,11 @@ export const applyCouponToCart = async (cartId: string, couponCode: string) => {
   return await updateCart(cartId, {
     coupon: cartCoupon,
     discountAmount: discount,
-    totalPrice: finalTotal,
+    price: {
+      ...cart.price,
+      finalTotal: Math.max(originalTotal + shippingTotal + discount, 0),
+      discountTotal: coupon.discountValue,
+    },
   });
 };
 
@@ -116,10 +121,14 @@ export const removeCouponFromCart = async (cartId: string) => {
     throw new ValidationError('No coupon applied', 400);
   }
 
+  const shippingtotal = cart.price?.shippingTotal ?? 0;
   return await updateCart(cartId, {
     coupon: undefined,
     discountAmount: 0,
-    totalPrice: cart.totalPrice! + cart.discountAmount!,
+    price: {
+      ...cart.price,
+      finalTotal: Math.max(cart.price.originalTotal + shippingtotal, 0),
+    },
   });
 };
 
@@ -162,6 +171,13 @@ export const calculateAndApplyShippingCost = async (
       currency: shippingCost.currency,
       delivery_time: shippingCost.delivery_time,
     },
-    totalPrice: cart.totalPrice + parseFloat(shippingCost.price),
+    price: {
+      ...cart.price,
+      shippingTotal: parseFloat(shippingCost.price),
+      finalTotal: Math.max(
+        cart.price.finalTotal + parseFloat(shippingCost.price),
+        0,
+      ),
+    },
   });
 };

@@ -24,16 +24,22 @@ export interface ShippingOptions {
   discount: string;
   currency: string;
   delivery_time: number;
-  error?: string
+  error?: string;
+}
+
+export interface CartPrice {
+  originalTotal: number;
+  shippingTotal?: number;
+  discountTotal?: number;
+  finalTotal: number;
 }
 
 export interface Cart {
   id: string;
   userId: string;
   items: CartItem[];
-  originalTotalPrice: number;
   totalQuantity: number;
-  totalPrice: number;
+  price: CartPrice;
   coupon?: CartCoupon;
   discountAmount?: number;
   shippingAddress?: UserAddress;
