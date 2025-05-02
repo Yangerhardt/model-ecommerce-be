@@ -6,6 +6,7 @@ import {
   deleteUserAddress,
 } from '../service/address.service';
 import { AuthRequest } from '@ecommercebe/src/types/authRequest';
+import { validateBrazilianAddress } from '../utils/validateBrazilianAddress';
 
 export const handleGetUserAddress = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
@@ -41,8 +42,20 @@ export const handleUpsertUserAddress = async (
       .json({ error: 'Invalid data', details: parsed.error.flatten() });
   }
 
-  const address = await upsertUserAddress(userId, parsed.data);
-  res.status(200).json(address);
+  const address = parsed.data;
+
+  const validation = await validateBrazilianAddress(address);
+  if (!validation.success) {
+    return res.status(validation.status ?? 400).json({
+      error: validation.error,
+      ...(typeof validation.details === 'object' && validation.details !== null
+        ? { details: validation.details }
+        : {}),
+    });
+  }
+
+  const savedAddress = await upsertUserAddress(userId, address);
+  res.status(200).json(savedAddress);
 };
 
 export const handleDeleteUserAddress = async (
