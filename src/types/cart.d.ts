@@ -8,10 +8,15 @@ export interface CartCoupon {
 }
 
 export interface CartItem {
+  id: string;
   sku: string;
   name: string;
   price: number;
   quantity: number;
+  weight: number;
+  width: number;
+  height: number;
+  length: number;
   productTitle: string;
   productImage: string;
 }

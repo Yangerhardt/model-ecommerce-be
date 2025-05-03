@@ -1,3 +1,4 @@
+import { CartItem } from '../types/cart';
 import { ValidationError } from '../utils/errors';
 
 export const validateCep = async (cep: string) => {
@@ -17,7 +18,7 @@ export const validateCep = async (cep: string) => {
   return data;
 };
 
-export const calculateShipping = async (cep: string) => {
+export const calculateShipping = async (cep: string, cartItems: CartItem[]) => {
   const cleanCep = cep.replace(/\D/g, '');
 
   if (!/^\d{8}$/.test(cleanCep)) {
@@ -27,6 +28,16 @@ export const calculateShipping = async (cep: string) => {
   const API_URL = 'https://www.melhorenvio.com.br/api/v2/me/shipment/calculate';
   const API_KEY = process.env.MELHOR_ENVIO_API_KEY;
 
+  const products = cartItems.map((item) => ({
+    id: item.id,
+    width: item.width,
+    height: item.height,
+    length: item.length,
+    weight: item.weight / 1000,
+    insurance_value: item.price,
+    quantity: item.quantity,
+  }));
+
   const body = {
     from: {
       postal_code: process.env.POSTAL_CODE_SENDER,
@@ -34,17 +45,7 @@ export const calculateShipping = async (cep: string) => {
     to: {
       postal_code: cleanCep,
     },
-    products: [
-      {
-        id: '1',
-        width: 15,
-        height: 10,
-        length: 20,
-        weight: 1,
-        insurance_value: 100,
-        quantity: 1,
-      },
-    ],
+    products,
     options: {
       receipt: false,
       own_hand: false,

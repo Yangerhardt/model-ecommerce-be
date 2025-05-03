@@ -158,6 +158,7 @@ export const calculateAndApplyShippingCost = async (
 
   const shippingOptions: ShippingOptions[] = await getShippingOptions(
     address.zip,
+    cart.items,
   );
   const shippingCost = shippingOptions.filter((option) => !option.error)?.[0];
 

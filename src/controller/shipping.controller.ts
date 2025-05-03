@@ -24,8 +24,8 @@ export const handleCalculateShipping = async (
   next: NextFunction,
 ) => {
   try {
-    const { cep } = req.body;
-    const options = await getShippingOptions(cep);
+    const { cep, cartItems } = req.body;
+    const options = await getShippingOptions(cep, cartItems);
     res.status(200).json(options);
   } catch (err) {
     next(err);
