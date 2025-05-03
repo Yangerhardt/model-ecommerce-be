@@ -104,11 +104,10 @@ export const applyCouponToCart = async (cartId: string, couponCode: string) => {
 
   return await updateCart(cartId, {
     coupon: cartCoupon,
-    discountAmount: discount,
     price: {
       ...cart.price,
       finalTotal: Math.max(originalTotal + shippingTotal + discount, 0),
-      discountTotal: coupon.discountValue,
+      discountTotal: discount,
     },
   });
 };

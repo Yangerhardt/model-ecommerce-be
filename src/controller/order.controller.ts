@@ -19,7 +19,6 @@ export const handleCreateOrder = async (
   try {
     const parseResult = CreateOrderSchema.safeParse(req.body);
     if (!parseResult.success) {
-      console.log('#############', parseResult.error.errors);
       return res.status(400).json({
         error: 'Invalid order payload',
         issues: parseResult.error.errors,

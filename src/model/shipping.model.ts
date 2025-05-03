@@ -33,7 +33,7 @@ export const calculateShipping = async (cep: string, cartItems: CartItem[]) => {
     width: item.width,
     height: item.height,
     length: item.length,
-    weight: item.weight / 1000,
+    weight: item.weight,
     insurance_value: item.price,
     quantity: item.quantity,
   }));
