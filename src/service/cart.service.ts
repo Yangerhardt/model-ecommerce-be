@@ -175,7 +175,9 @@ export const calculateAndApplyShippingCost = async (
       ...cart.price,
       shippingTotal: parseFloat(shippingCost.price),
       finalTotal: Math.max(
-        cart.price.finalTotal + parseFloat(shippingCost.price),
+        cart.price?.originalTotal +
+          (cart.price.discountTotal ?? 0) +
+          parseFloat(shippingCost.price),
         0,
       ),
     },
