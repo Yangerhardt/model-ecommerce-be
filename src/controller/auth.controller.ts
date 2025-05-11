@@ -10,6 +10,7 @@ import {
   changePassword,
 } from '../service/auth.service';
 import { AuthRequest } from '../types/authRequest';
+import { NotAllowedError, NotFoundError } from '../utils/errors';
 
 export const handleRegister = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -55,10 +56,12 @@ export const handleChangePassword = async (req: AuthRequest, res: Response) => {
   const email = req.user?.email;
 
   if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(403).json({ error: new NotAllowedError('Unauthorized') });
   }
   if (!email) {
-    return res.status(401).json({ error: 'Email not found' });
+    return res
+      .status(404)
+      .json({ error: new NotFoundError('Email not found') });
   }
 
   const { currentPassword, newPassword } = req.body;

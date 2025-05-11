@@ -10,6 +10,11 @@ import {
 import { AuthRequest } from '@ecommercebe/src/types/authRequest';
 import { CreateOrderSchema } from '../schema/order.schema';
 import { Brand } from '../types/order';
+import {
+  NotAllowedError,
+  NotFoundError,
+  ValidationError,
+} from '../utils/errors';
 
 export const handleCreateOrder = async (
   req: AuthRequest,
@@ -42,9 +47,9 @@ export const handleCreateOrder = async (
     const order = await createOrderFromCart(cartId, mappedPayment);
 
     if (order.userId !== userId) {
-      return res
-        .status(403)
-        .json({ error: 'Access denied: this order does not belong to you' });
+      return res.status(403).json({
+        error: new NotAllowedError('Unauthorized'),
+      });
     }
 
     res.status(201).json(order);
@@ -58,19 +63,23 @@ export const handleGetOrder = async (req: AuthRequest, res: Response) => {
   const { orderId } = req.params;
 
   if (!orderId) {
-    return res.status(400).json({ error: 'Order ID is required' });
+    return res
+      .status(400)
+      .json({ error: new ValidationError('Order ID is required') });
   }
 
   const order = await getOrder(orderId);
 
   if (!order) {
-    return res.status(404).json({ error: 'Order not found' });
+    return res
+      .status(404)
+      .json({ error: new NotFoundError('Order not found') });
   }
 
   if (order.userId !== userId) {
-    return res
-      .status(403)
-      .json({ error: 'Access denied: this order does not belong to you' });
+    return res.status(403).json({
+      error: new NotAllowedError('Unauthorized'),
+    });
   }
 
   res.status(200).json(order);
@@ -80,7 +89,9 @@ export const handleGetUserOrders = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
 
   if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(403).json({
+      error: new NotAllowedError('Unauthorized'),
+    });
   }
 
   const orders = await getOrdersByUser(userId);
@@ -93,19 +104,23 @@ export const handleCancelOrder = async (req: AuthRequest, res: Response) => {
   const { orderId } = req.params;
 
   if (!orderId) {
-    return res.status(400).json({ error: 'Order ID is required' });
+    return res
+      .status(400)
+      .json({ error: new ValidationError('Order ID is required') });
   }
 
   const order = await getOrder(orderId);
 
   if (!order) {
-    return res.status(404).json({ error: 'Order not found' });
+    return res
+      .status(404)
+      .json({ error: new NotFoundError('Order not found') });
   }
 
   if (order.userId !== userId) {
-    return res
-      .status(403)
-      .json({ error: 'Access denied: this order does not belong to you' });
+    return res.status(403).json({
+      error: new NotAllowedError('Unauthorized'),
+    });
   }
 
   const canceledOrder = await cancelOrder(orderId);
@@ -117,13 +132,17 @@ export const handleDeleteOrder = async (req: AuthRequest, res: Response) => {
   const { orderId } = req.params;
 
   if (!orderId) {
-    return res.status(400).json({ error: 'Order ID is required' });
+    return res
+      .status(400)
+      .json({ error: new ValidationError('Order ID is required') });
   }
 
   const order = await getOrder(orderId);
 
   if (!order) {
-    return res.status(404).json({ error: 'Order not found' });
+    return res
+      .status(404)
+      .json({ error: new NotFoundError('Order not found') });
   }
 
   await deleteOrder(orderId);

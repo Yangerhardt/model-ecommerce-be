@@ -32,7 +32,7 @@ export const deleteUserAddress = async (userId: string) => {
   const address = await getUserAddress(userId);
 
   if (!address) {
-    throw new NotFoundError('No address found', 404);
+    throw new NotFoundError('No address found');
   }
 
   await removeUserAddress(userId);

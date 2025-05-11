@@ -7,18 +7,21 @@ import {
 } from '../service/address.service';
 import { AuthRequest } from '@ecommercebe/src/types/authRequest';
 import { validateBrazilianAddress } from '../utils/validateBrazilianAddress';
+import { NotAllowedError, NotFoundError } from '../utils/errors';
 
 export const handleGetUserAddress = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
 
   if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(403).json({ error: new NotAllowedError('Unauthorized') });
   }
 
   const address = await findUserAddress(userId);
 
   if (!address) {
-    return res.status(404).json({ error: 'Address not found' });
+    return res
+      .status(404)
+      .json({ error: new NotFoundError('Address not found') });
   }
 
   res.status(200).json(address);
@@ -31,7 +34,7 @@ export const handleUpsertUserAddress = async (
   const userId = req.user?.id;
 
   if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(403).json({ error: new NotAllowedError('Unauthorized') });
   }
 
   const parsed = UserAddressSchema.safeParse(req.body);

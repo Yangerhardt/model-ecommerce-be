@@ -19,7 +19,7 @@ export const sendForgetPasswordEmail = async (email: string, token: string) => {
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error('Error sending password reset email: ', error);
-    throw new EmailSendingError('Error sending password reset email', 500);
+    throw new EmailSendingError('Error sending password reset email');
   }
 };
 
@@ -41,6 +41,6 @@ export const sendConfirmationEmail = async (email: string, token: string) => {
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error('Error sending confirmation email: ', error);
-    throw new EmailSendingError('Error sending confirmation email', 500);
+    throw new EmailSendingError('Error sending confirmation email');
   }
 };
