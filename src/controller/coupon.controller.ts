@@ -5,6 +5,7 @@ import {
   removeCoupon,
 } from '../service/coupon.service';
 import { CouponSchema } from '../schema/coupon.schema';
+import { ValidationError } from '../utils/errors';
 
 export const handleGetCoupon = async (req: Request, res: Response) => {
   const { code } = req.params;
@@ -19,9 +20,12 @@ export const handleCreateOrUpdateCoupon = async (
   const parsed = CouponSchema.safeParse(req.body);
 
   if (!parsed.success) {
-    return res
-      .status(400)
-      .json({ error: 'Invalid data', details: parsed.error.flatten() });
+    return res.status(400).json({
+      error: new ValidationError(
+        'Invalid data',
+        JSON.stringify(parsed.error.flatten()),
+      ),
+    });
   }
 
   const coupon = await createOrUpdateCoupon(parsed.data);

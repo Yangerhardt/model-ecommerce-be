@@ -62,27 +62,27 @@ export const getCart = async (cartId: string): Promise<Cart | null> => {
 
 export const deleteCart = async (cartId: string): Promise<void> => {
   const cart = await getCartById(cartId);
-  if (!cart) throw new NotFoundError('Cart not found', 404);
+  if (!cart) throw new NotFoundError('Cart not found');
 
   await removeCart(cartId);
 };
 
 export const applyCouponToCart = async (cartId: string, couponCode: string) => {
   const cart = await getCart(cartId);
-  if (!cart) throw new NotFoundError('Cart not found', 404);
+  if (!cart) throw new NotFoundError('Cart not found');
 
   const coupon = await getCouponByCode(couponCode);
   if (!coupon || !coupon.isActive) {
-    throw new ValidationError('Invalid or inactive coupon', 400);
+    throw new ValidationError('Invalid or inactive coupon');
   }
 
   const now = new Date();
   if (coupon.expiresAt && new Date(coupon.expiresAt) < now) {
-    throw new ValidationError('Coupon expired', 400);
+    throw new ValidationError('Coupon expired');
   }
 
   if (cart.coupon && cart.coupon.code === couponCode) {
-    throw new ValidationError('Coupon already applied', 400);
+    throw new ValidationError('Coupon already applied');
   }
 
   const originalTotal = cart.price?.originalTotal ?? 0;
@@ -114,10 +114,10 @@ export const applyCouponToCart = async (cartId: string, couponCode: string) => {
 
 export const removeCouponFromCart = async (cartId: string) => {
   const cart = await getCart(cartId);
-  if (!cart) throw new NotFoundError('Cart not found', 404);
+  if (!cart) throw new NotFoundError('Cart not found');
 
   if (!cart.coupon) {
-    throw new ValidationError('No coupon applied', 400);
+    throw new ValidationError('No coupon applied');
   }
 
   const shippingtotal = cart.price?.shippingTotal ?? 0;
@@ -133,10 +133,10 @@ export const removeCouponFromCart = async (cartId: string) => {
 
 export const applyAddressToCart = async (cartId: string, userId: string) => {
   const cart = await getCart(cartId);
-  if (!cart) throw new NotFoundError('Cart not found', 404);
+  if (!cart) throw new NotFoundError('Cart not found');
 
   const address = await getUserAddress(userId);
-  if (!address) throw new NotFoundError('User address not found', 404);
+  if (!address) throw new NotFoundError('User address not found');
 
   await getValidatedCepInfo(address.zip);
 
@@ -150,10 +150,10 @@ export const calculateAndApplyShippingCost = async (
   userId: string,
 ) => {
   const cart = await getCart(cartId);
-  if (!cart) throw new NotFoundError('Cart not found', 404);
+  if (!cart) throw new NotFoundError('Cart not found');
 
   const address = await getUserAddress(userId);
-  if (!address) throw new NotFoundError('User address not found', 404);
+  if (!address) throw new NotFoundError('User address not found');
 
   const shippingOptions: ShippingOptions[] = await getShippingOptions(
     address.zip,

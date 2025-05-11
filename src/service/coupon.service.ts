@@ -9,7 +9,7 @@ import { NotFoundError } from '../utils/errors';
 export const findCoupon = async (code: string): Promise<Coupon> => {
   const coupon = await getCouponByCode(code);
   if (!coupon || !coupon.isActive) {
-    throw new NotFoundError('Coupon not found or inactive', 404);
+    throw new NotFoundError('Coupon not found or inactive');
   }
   return coupon;
 };
@@ -22,7 +22,7 @@ export const createOrUpdateCoupon = async (data: Coupon): Promise<Coupon> => {
 export const removeCoupon = async (code: string) => {
   const coupon = await getCouponByCode(code);
   if (!coupon) {
-    throw new NotFoundError('Coupon not found', 404);
+    throw new NotFoundError('Coupon not found');
   }
   await deleteCoupon(code);
   return { message: `Coupon "${code}" removed.` };

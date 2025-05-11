@@ -16,10 +16,10 @@ export const createOrderFromCart = async (
   payment: Payment,
 ): Promise<Order> => {
   const cart = await getCartById(cartId);
-  if (!cart) throw new NotFoundError('Cart not found', 404);
+  if (!cart) throw new NotFoundError('Cart not found');
 
   if (!cart.shippingAddress || !cart.shippingCost) {
-    throw new ValidationError('Shipping information incomplete', 400);
+    throw new ValidationError('Shipping information incomplete');
   }
 
   const now = new Date();
@@ -64,7 +64,7 @@ export const getOrdersByUser = async (
 
 export const cancelOrder = async (orderId: string): Promise<Order | null> => {
   const order = await getOrderById(orderId);
-  if (!order) throw new NotFoundError('Order not found', 404);
+  if (!order) throw new NotFoundError('Order not found');
 
   const updatedOrder = {
     ...order,
@@ -78,7 +78,7 @@ export const cancelOrder = async (orderId: string): Promise<Order | null> => {
 
 export const deleteOrder = async (orderId: string): Promise<void> => {
   const order = await getOrderById(orderId);
-  if (!order) throw new NotFoundError('Order not found', 404);
+  if (!order) throw new NotFoundError('Order not found');
 
   await removeOrder(orderId);
 };

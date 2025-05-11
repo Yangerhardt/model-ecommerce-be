@@ -5,14 +5,14 @@ export const validateCep = async (cep: string) => {
   const cleanCep = cep.replace(/\D/g, '');
 
   if (!/^\d{8}$/.test(cleanCep)) {
-    throw new ValidationError('Invalid ZIP code', 400);
+    throw new ValidationError('Invalid ZIP code');
   }
 
   const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
   const data = await response.json();
 
   if (data.erro || !data.uf) {
-    throw new ValidationError('Address not found', 404);
+    throw new ValidationError('Address not found');
   }
 
   return data;
@@ -22,7 +22,7 @@ export const calculateShipping = async (cep: string, cartItems: CartItem[]) => {
   const cleanCep = cep.replace(/\D/g, '');
 
   if (!/^\d{8}$/.test(cleanCep)) {
-    throw new ValidationError('Invalid ZIP code', 400);
+    throw new ValidationError('Invalid ZIP code');
   }
 
   const API_URL = 'https://www.melhorenvio.com.br/api/v2/me/shipment/calculate';
@@ -68,7 +68,7 @@ export const calculateShipping = async (cep: string, cartItems: CartItem[]) => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new ValidationError('Failed to fetch shipping data', response.status);
+    throw new ValidationError('Failed to fetch shipping data');
   }
 
   return data.slice(0, 4);
